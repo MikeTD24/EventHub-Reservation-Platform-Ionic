@@ -6,9 +6,9 @@ La version Ionic utilise son propre backend sur le port **3001** et une base nom
 
 Prérequis : Node.js 24.15 ou supérieur dans la branche 24, npm et les binaires PostgreSQL installés. Le script détecte les installations dans `C:\Program Files\PostgreSQL`. Si nécessaire, renseigner `POSTGRES_BIN` avec le dossier contenant `initdb` et `pg_ctl`.
 
-Depuis la racine du nouveau projet :
+Les commandes de ce guide sont prévues pour **CMD**. Depuis la racine du nouveau projet :
 
-```powershell
+```bat
 npm run install:all
 npm run setup:local -- --isolated-postgres
 npm start
@@ -20,13 +20,13 @@ Les identifiants du compte administrateur et du participant se trouvent dans **L
 
 `npm start` redémarre automatiquement cette instance locale si nécessaire. Arrêter l'application avec Ctrl+C conserve PostgreSQL disponible. Pour arrêter également la base :
 
-```powershell
+```bat
 npm run db:stop
 ```
 
 Pour ne redémarrer que la base :
 
-```powershell
+```bat
 npm run db:start
 ```
 
@@ -36,7 +36,7 @@ Le setup est réexécutable : les tables et données de démonstration manquante
 
 Si vous préférez utiliser votre serveur PostgreSQL habituel, copier `Backend/.env.example` vers `Backend/.env`, renseigner les accès et garder `DB_NAME=eventhub_ionic`. Le rôle doit pouvoir créer cette base, ou un administrateur doit la créer avec ce rôle comme propriétaire. Puis lancer :
 
-```powershell
+```bat
 npm run setup:local
 ```
 
@@ -52,7 +52,7 @@ Le chemin des données est calculé à partir du dossier courant du projet. Aucu
 
 ## Vérification API
 
-```powershell
+```bat
 npm run db:start
 npm run test:api
 ```
@@ -61,16 +61,16 @@ Le script démarre temporairement Express sur un port libre et utilise de vraies
 
 ## Build servi par Express
 
-```powershell
+```bat
 npm run build
 npm run db:start
-$env:NODE_ENV = 'production'
+set "NODE_ENV=production"
 npm --prefix Backend start
 ```
 
-Express sert `Frontend/www` et l'API sous la même origine sur **http://localhost:3001**. La variable `NODE_ENV` du terminal a priorité sur le fichier `.env`. Pour revenir au développement dans le même terminal :
+Express sert `Frontend/www` et l'API sous la même origine sur **http://localhost:3001**. La variable `NODE_ENV` du terminal a priorité sur le fichier `.env`. Arrêter d’abord le serveur avec Ctrl+C. Pour revenir au développement dans le même terminal CMD :
 
-```powershell
-Remove-Item Env:NODE_ENV
+```bat
+set "NODE_ENV="
 npm start
 ```

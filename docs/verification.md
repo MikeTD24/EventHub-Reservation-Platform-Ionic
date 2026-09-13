@@ -4,7 +4,7 @@ Les tests ciblent exclusivement la base de cette variante, `eventhub_ionic`.
 
 ## Commandes
 
-```powershell
+```bat
 npm run build
 npm test
 npm run db:start
@@ -13,11 +13,11 @@ npm run test:api
 
 Pour les tests navigateur, démarrer `npm start` dans un autre terminal, puis :
 
-```powershell
+```bat
 npm run test:e2e
 ```
 
-Les tests navigateur utilisent Chrome installé localement, avec des comptes et événements temporaires. On peut choisir Edge avec `$env:PLAYWRIGHT_CHANNEL = 'msedge'`. `E2E_BASE_URL` permet de viser le build web servi par Express, mais l'API de test reste volontairement l'instance locale sur le port 3001.
+Les tests navigateur utilisent Chrome installé localement, avec des comptes et événements temporaires. On peut choisir Edge avec `set "PLAYWRIGHT_CHANNEL=msedge"`. `E2E_BASE_URL` permet de viser le build web servi par Express, mais l'API de test reste volontairement l'instance locale sur le port 3001.
 
 ## Couverture
 

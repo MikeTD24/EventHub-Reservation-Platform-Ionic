@@ -12,7 +12,7 @@ La version livrée est fonctionnelle dans le navigateur, avec une interface Ioni
 
 Les paquets Core, CLI, Android et iOS utilisent la même version. Pour ajouter Android, depuis `Frontend` :
 
-```powershell
+```bat
 npm run android:add
 ```
 
@@ -22,7 +22,7 @@ La valeur initiale `http://10.0.2.2:3001/api` indique l'adresse du PC depuis l'�
 
 Après configuration de l'URL :
 
-```powershell
+```bat
 npm run android:sync
 npm run android:open
 ```

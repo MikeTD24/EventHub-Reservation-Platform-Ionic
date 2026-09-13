@@ -23,7 +23,7 @@ Le backend vérifie les rôles, la propriété des réservations et leur capacit
 
 ## Démarrage sur le PC où le projet est déjà installé
 
-Dans **CMD** :
+Les commandes de cette documentation sont prévues pour **CMD**. Dans une invite de commandes :
 
 ```bat
 cd /d C:\IONIC\EventHub-Reservation-Platform-Ionic
@@ -33,6 +33,8 @@ npm start
 Ouvrir **http://localhost:8100**. Les deux comptes de démonstration, administrateur et participant, sont indiqués dans **LOCAL-ACCESS.md**, un fichier privé exclu de Git.
 
 Dans PowerShell, utiliser `npm.cmd` si l'exécution de `npm.ps1` est bloquée. Il n'est pas nécessaire de modifier la stratégie de sécurité PowerShell.
+
+Pour un premier essai guidé, suivre le [petit test avec CMD](docs/test-cmd.md).
 
 ## Installer une nouvelle copie
 
