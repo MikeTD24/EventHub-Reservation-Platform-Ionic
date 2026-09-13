@@ -14,7 +14,7 @@ try {
       viewport: { width, height },
       locale: "fr-BE",
     });
-    await page.goto("http://127.0.0.1:8100/evenements");
+    await page.goto("http://localhost:8100/evenements");
     await page.locator("app-event-list ion-card").first().waitFor();
     await page.evaluate(() => document.fonts.ready);
     await page

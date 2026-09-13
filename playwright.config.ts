@@ -8,7 +8,7 @@ export default defineConfig({
   expect: { timeout: 12_000 },
   reporter: "list",
   use: {
-    baseURL: process.env["E2E_BASE_URL"] || "http://127.0.0.1:8100",
+    baseURL: process.env["E2E_BASE_URL"] || "http://localhost:8100",
     channel: process.env["PLAYWRIGHT_CHANNEL"] || "chrome",
     ...devices["Desktop Chrome"],
     locale: "fr-BE",
