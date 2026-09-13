@@ -1,0 +1,96 @@
+<ion-app>
+  <ion-split-pane contentId="main-content" when="lg">
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-content>
+        <a class="brand" routerLink="/evenements" aria-label="EventHub, accueil"
+          ><span class="brand-mark">e<span>h</span></span
+          ><span>EventHub<small>LES RENCONTRES COMMENCENT ICI</small></span></a
+        >
+        <p class="nav-heading">VOTRE ESPACE</p>
+        <ion-list lines="none" class="nav-list">
+          <ion-menu-toggle [autoHide]="false">
+            <ion-item routerLink="/evenements" routerLinkActive="selected" detail="false"
+              ><ion-icon slot="start" name="calendar-outline" /><ion-label
+                >Explorer</ion-label
+              ></ion-item
+            >
+            <ion-item routerLink="/mes-reservations" routerLinkActive="selected" detail="false"
+              ><ion-icon slot="start" name="ticket-outline" /><ion-label
+                >Mes réservations</ion-label
+              ></ion-item
+            >
+          </ion-menu-toggle>
+        </ion-list>
+        @if (auth.isAdmin()) {
+          <p class="nav-heading">ORGANISATION</p>
+          <ion-list lines="none" class="nav-list"
+            ><ion-menu-toggle [autoHide]="false">
+              <ion-item routerLink="/admin/evenements" routerLinkActive="selected" detail="false"
+                ><ion-icon slot="start" name="grid-outline" /><ion-label
+                  >Événements</ion-label
+                ></ion-item
+              >
+              <ion-item routerLink="/admin/categories" routerLinkActive="selected" detail="false"
+                ><ion-icon slot="start" name="layers-outline" /><ion-label
+                  >Catégories</ion-label
+                ></ion-item
+              >
+            </ion-menu-toggle></ion-list
+          >
+        }
+        <aside class="sidebar-note">
+          <ion-icon name="sparkles-outline" />
+          <h2>Faites place aux rencontres.</h2>
+          <p>Un atelier, un concert, une nouvelle idée. Votre prochain moment vous attend.</p>
+        </aside>
+        <div class="account">
+          @if (auth.utilisateur(); as user) {
+            <div class="account-person">
+              <span class="avatar">{{ user.nom.slice(0, 1).toUpperCase() }}</span>
+              <div>
+                <strong>{{ user.nom }}</strong
+                ><small>{{ auth.isAdmin() ? 'Administrateur' : 'Membre EventHub' }}</small>
+              </div>
+            </div>
+            <ion-menu-toggle [autoHide]="false"
+              ><button class="logout" (click)="logout()">
+                <ion-icon name="log-out-outline" /> Se déconnecter
+              </button></ion-menu-toggle
+            >
+          } @else {
+            <ion-menu-toggle [autoHide]="false"
+              ><a class="signin" routerLink="/connexion"
+                >Se connecter <ion-icon name="arrow-forward-outline" /></a
+            ></ion-menu-toggle>
+            <p>Une place pour chacun. La vôtre aussi.</p>
+          }
+        </div>
+      </ion-content>
+    </ion-menu>
+    <div class="ion-page app-main" id="main-content">
+      <div class="page-outlet"><ion-router-outlet /></div>
+      <nav class="bottom-nav" aria-label="Navigation principale">
+        <a routerLink="/evenements" routerLinkActive="active"
+          ><ion-icon name="calendar-outline" /><span>Explorer</span></a
+        >
+        <a routerLink="/mes-reservations" routerLinkActive="active"
+          ><ion-icon name="ticket-outline" /><span>Réservations</span></a
+        >
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin/evenements" routerLinkActive="active"
+            ><ion-icon name="grid-outline" /><span>Gestion</span></a
+          >
+        }
+        @if (auth.isAuthenticated()) {
+          <button (click)="logout()">
+            <ion-icon name="log-out-outline" /><span>Déconnexion</span>
+          </button>
+        } @else {
+          <a routerLink="/connexion" routerLinkActive="active"
+            ><ion-icon name="person-circle-outline" /><span>Connexion</span></a
+          >
+        }
+      </nav>
+    </div>
+  </ion-split-pane>
+</ion-app>

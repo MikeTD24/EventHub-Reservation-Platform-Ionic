@@ -1,0 +1,51 @@
+name: Vérifier EventHub Ionic
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: ionic_ci
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: eventhub_ionic
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ionic_ci -d eventhub_ionic"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            Frontend/package-lock.json
+            Backend/package-lock.json
+      - run: npm ci
+      - run: npm --prefix Frontend ci
+      - run: npm --prefix Backend ci
+      - run: npm run format:check
+      - run: npm run build
+      - run: npm test
+      - name: Préparer la base CI isolée
+        run: npm run setup:local
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_USER: ionic_ci
+          DB_PASSWORD: ci-only-password
+      - run: npm run test:api

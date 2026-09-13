@@ -1,0 +1,58 @@
+{
+  "name": "eventhub-ionic-app",
+  "version": "1.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --port 8100",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test --watch=false",
+    "ionic": "ionic",
+    "cap:sync": "npm run build && cap sync",
+    "android:add": "cap add android",
+    "android:open": "cap open android",
+    "build:android": "ng build --configuration android",
+    "android:sync": "npm run build:android && cap sync android"
+  },
+  "private": true,
+  "packageManager": "npm@11.17.0",
+  "dependencies": {
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "@ionic/angular": "^9.0.3",
+    "ionicons": "^8.1.0",
+    "@capacitor/core": "8.5.2",
+    "@capacitor/android": "8.5.2",
+    "@capacitor/ios": "8.5.2",
+    "zone.js": "~0.16.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.5",
+    "@angular/cli": "^22.1.5",
+    "@angular/compiler-cli": "^22.1.0",
+    "jsdom": "^28.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8",
+    "@capacitor/cli": "8.5.2",
+    "@ionic/cli": "^7.2.1",
+    "@ionic/angular-toolkit": "^13.0.0"
+  },
+  "description": "EventHub pour mobile et navigateur, avec Ionic Angular et Capacitor",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "overrides": {
+    "tar": "^7.5.21",
+    "tmp": "^0.2.6",
+    "xcode": {
+      "uuid": "^11.1.1"
+    }
+  }
+}

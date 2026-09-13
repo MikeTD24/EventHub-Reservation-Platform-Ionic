@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.page-shell {
+  padding-top: 100px;
+  text-align: center;
+}
+h1 {
+  font-size: 30px;
+}
+p {
+  line-height: 1.8;
+}

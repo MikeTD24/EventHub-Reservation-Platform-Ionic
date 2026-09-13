@@ -1,0 +1,214 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"
+      ><ion-back-button defaultHref="/admin/evenements" text="Retour"
+    /></ion-buttons>
+    <ion-title>{{ isEditMode() ? 'Modifier un événement' : 'Nouvel événement' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <main class="page-shell admin-page">
+    <header class="page-heading">
+      <p class="eyebrow">Espace organisateur</p>
+      <h1>
+        {{ isEditMode() ? 'Peaufinez votre événement.' : 'Faites vivre votre prochaine idée.' }}
+      </h1>
+      <p class="muted">
+        {{
+          isEditMode()
+            ? 'Mettez à jour les informations et la capacité de cet événement.'
+            : 'Quelques informations suffisent pour ouvrir les réservations.'
+        }}
+      </p>
+    </header>
+    @if (isLoading()) {
+      <div class="state-card surface" role="status">
+        <ion-spinner name="crescent" />
+        <p>Chargement du formulaire…</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="state-card surface notice--error" role="alert">
+        <p>{{ errorMessage() }}</p>
+        <ion-button fill="outline" (click)="ionViewWillEnter()">Réessayer</ion-button>
+        <ion-button fill="clear" routerLink="/admin/evenements">Retour à la liste</ion-button>
+      </div>
+    } @else {
+      @if (categories().length === 0) {
+        <div class="notice notice--warning" role="alert">
+          <strong>Aucune catégorie disponible.</strong>
+          <p>Créez une catégorie avant d’ajouter votre événement.</p>
+          <ion-button fill="outline" routerLink="/admin/categories"
+            >Gérer les catégories</ion-button
+          >
+        </div>
+      }
+      <form class="event-form" [formGroup]="evenementForm" (ngSubmit)="submit()">
+        <section class="surface">
+          <div class="section-heading">
+            <span class="section-number">01</span>
+            <div>
+              <h2>Les informations essentielles</h2>
+              <p class="muted">Donnez envie aux visiteurs de vous rejoindre.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-field form-field--wide">
+              <ion-input
+                label="Titre *"
+                labelPlacement="stacked"
+                fill="outline"
+                type="text"
+                [maxlength]="150"
+                formControlName="titre"
+                placeholder="Ex. Festival Jazz de Bruxelles"
+              />
+              @if (evenementForm.controls.titre.touched && evenementForm.controls.titre.invalid) {
+                <p class="field-error" role="alert">
+                  {{
+                    evenementForm.controls.titre.hasError('maxlength')
+                      ? 'Le titre ne peut pas dépasser 150 caractères.'
+                      : 'Le titre est obligatoire.'
+                  }}
+                </p>
+              }
+            </div>
+            <div class="form-field">
+              <ion-input
+                label="Lieu *"
+                labelPlacement="stacked"
+                fill="outline"
+                type="text"
+                [maxlength]="255"
+                formControlName="lieu"
+                placeholder="Ex. Bruxelles-Centre"
+              />
+              @if (evenementForm.controls.lieu.touched && evenementForm.controls.lieu.invalid) {
+                <p class="field-error" role="alert">
+                  {{
+                    evenementForm.controls.lieu.hasError('maxlength')
+                      ? 'Le lieu ne peut pas dépasser 255 caractères.'
+                      : 'Le lieu est obligatoire.'
+                  }}
+                </p>
+              }
+            </div>
+            <div class="form-field">
+              <ion-select
+                label="Catégorie *"
+                labelPlacement="stacked"
+                fill="outline"
+                interface="alert"
+                cancelText="Annuler"
+                okText="Choisir"
+                formControlName="id_categorie"
+                placeholder="Sélectionnez une catégorie"
+              >
+                @for (categorie of categories(); track categorie.id) {
+                  <ion-select-option [value]="categorie.id">{{ categorie.nom }}</ion-select-option>
+                }
+              </ion-select>
+              @if (
+                evenementForm.controls.id_categorie.touched &&
+                evenementForm.controls.id_categorie.invalid
+              ) {
+                <p class="field-error" role="alert">Sélectionnez une catégorie valide.</p>
+              }
+            </div>
+            <div class="form-field form-field--wide">
+              <ion-textarea
+                label="Description"
+                labelPlacement="stacked"
+                fill="outline"
+                [rows]="5"
+                [autoGrow]="true"
+                formControlName="description"
+                placeholder="Le programme, les temps forts, les informations pratiques…"
+              />
+            </div>
+          </div>
+        </section>
+        <section class="surface">
+          <div class="section-heading">
+            <span class="section-number">02</span>
+            <div>
+              <h2>Date et capacité</h2>
+              <p class="muted">Prévoyez le bon moment et une place pour chacun.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="date-label" for="event-date">Date et heure locales *</label>
+              <input
+                class="date-input"
+                id="event-date"
+                type="datetime-local"
+                formControlName="date_evenement"
+              />
+              @if (
+                evenementForm.controls.date_evenement.touched &&
+                evenementForm.controls.date_evenement.invalid
+              ) {
+                <p class="field-error" role="alert">La date et l’heure sont obligatoires.</p>
+              }
+            </div>
+            <div class="form-field">
+              <ion-input
+                label="Nombre total de places *"
+                labelPlacement="stacked"
+                fill="outline"
+                type="number"
+                inputmode="numeric"
+                step="1"
+                [min]="minimumCapacity()"
+                formControlName="places_totales"
+              />
+              @if (
+                evenementForm.controls.places_totales.touched &&
+                evenementForm.controls.places_totales.invalid
+              ) {
+                <p class="field-error" role="alert">
+                  @if (evenementForm.controls.places_totales.hasError('required')) {
+                    Le nombre de places est obligatoire.
+                  } @else if (evenementForm.controls.places_totales.hasError('min')) {
+                    La capacité minimale est de {{ minimumCapacity() }} place(s).
+                  } @else {
+                    La capacité doit être un nombre entier.
+                  }
+                </p>
+              }
+              @if (isEditMode() && placesOccupees() > 0) {
+                <p class="muted field-hint">
+                  {{ placesOccupees() }} place(s) déjà réservée(s). La capacité ne peut pas être
+                  inférieure.
+                </p>
+              }
+            </div>
+          </div>
+        </section>
+        @if (submitError()) {
+          <p class="notice notice--error" role="alert">{{ submitError() }}</p>
+        }
+        <footer class="form-actions">
+          <p class="muted">* Champs obligatoires</p>
+          <div class="actions">
+            <ion-button fill="outline" routerLink="/admin/evenements" [disabled]="isSubmitting()"
+              >Annuler</ion-button
+            >
+            <ion-button type="submit" [disabled]="isSubmitting() || categories().length === 0">
+              @if (isSubmitting()) {
+                <ion-spinner name="crescent" slot="start" />
+              }
+              {{
+                isSubmitting()
+                  ? 'Enregistrement…'
+                  : isEditMode()
+                    ? 'Enregistrer'
+                    : 'Créer l’événement'
+              }}
+            </ion-button>
+          </div>
+        </footer>
+      </form>
+    }
+  </main>
+</ion-content>

@@ -1,0 +1,40 @@
+# Dépendances, builds et caches
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+
+# Variables d’environnement locales
+**/.env
+!**/.env.example
+
+# Logs et fichiers temporaires
+*.log
+tmp/
+
+# Éditeurs et systèmes
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Documents pédagogiques locaux
+Etape Labo_reserv_event.md
+Labo*.pdf
+
+# Ionic / Capacitor
+**/www/
+**/.ionic/
+**/android/.gradle/
+**/android/**/build/
+**/android/local.properties
+**/ios/App/Pods/
+**/ios/App/build/
+**/ios/App/App/public/
+**/android/app/src/main/assets/public/
+**/test-results/
+**/playwright-report/
+LOCAL-ACCESS.md
+.local-postgres/
+*-audit.json
+tmp-servers.json

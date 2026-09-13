@@ -1,0 +1,385 @@
+:host {
+  display: block;
+}
+.page-shell {
+  max-width: 1060px;
+  margin: auto;
+  padding: 28px 28px 40px;
+}
+.page-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+  padding: 10px 0;
+}
+.eyebrow {
+  color: #7964bd;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+}
+h1 {
+  color: #202238;
+  font-size: clamp(26px, 3.4vw, 37px);
+  font-weight: 780;
+  letter-spacing: -0.045em;
+  margin: 12px 0;
+}
+.page-intro > div > p:not(.eyebrow) {
+  color: #77798d;
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 560px;
+}
+.count-tile {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 0 10px;
+  padding: 18px 25px;
+  background: #eeebfc;
+  border: 1px solid #e5dff9;
+  color: #6b55b6;
+  border-radius: 16px;
+}
+.count-tile ion-icon {
+  font-size: 27px;
+}
+.count-tile strong {
+  font-size: 31px;
+}
+.count-tile span {
+  grid-column: 2;
+  font-size: 11px;
+}
+ion-segment {
+  width: min(100%, 420px);
+  padding: 4px;
+  margin-bottom: 24px;
+  background: #eaeaf2;
+  border-radius: 12px;
+}
+ion-segment-button {
+  --indicator-color: white;
+  --indicator-box-shadow: 0 2px 4px #20223809;
+  --color: #737589;
+  --color-checked: #5745c1;
+  --border-radius: 9px;
+  min-height: 34px;
+  min-width: 80px;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.reservations-list {
+  display: grid;
+  gap: 20px;
+}
+.reservation-card {
+  margin: 0;
+  border: 1px solid #e6e7ef;
+  border-left: 4px solid #aa97e5;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 4px 16px #20223804;
+}
+.reservation-card--cancelled {
+  border-left-color: #c3c6d3;
+}
+ion-card-content {
+  padding: 24px 27px;
+}
+.reservation-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.reservation-topline > div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+ion-badge {
+  font-size: 9px;
+  font-weight: 650;
+  padding: 5px 8px;
+  border-radius: 5px;
+}
+.reference,
+.booking-date {
+  color: #9293a2;
+  font-size: 10px;
+}
+.ticket-body {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.date-tile {
+  display: grid;
+  justify-items: center;
+  flex-shrink: 0;
+  min-width: 72px;
+  padding: 12px 15px;
+  background: #f1edfc;
+  color: #725bbb;
+  border-radius: 12px;
+}
+.date-tile strong {
+  font-size: 29px;
+  line-height: 1.2;
+}
+.date-tile span {
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+.event-copy {
+  flex: 1;
+  min-width: 0;
+}
+.category {
+  margin: 0 0 5px;
+  font-size: 10px;
+  color: #8b7baa;
+  font-weight: 600;
+}
+h2 {
+  margin: 0 0 10px;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+h2 a {
+  color: #202238;
+  text-decoration: none;
+}
+.event-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #7c7e91;
+  margin: 5px 0;
+}
+.event-meta ion-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  color: #998daf;
+}
+.seat-count {
+  display: grid;
+  justify-items: center;
+  padding-left: 25px;
+  border-left: 1px dashed #dedbea;
+  min-width: 74px;
+  flex-shrink: 0;
+  color: #7864b3;
+}
+.seat-count ion-icon {
+  font-size: 22px;
+}
+.seat-count strong {
+  font-size: 26px;
+  line-height: 1.4;
+}
+.seat-count span {
+  color: #8a8799;
+  font-size: 10px;
+}
+.ticket-actions {
+  margin-top: 22px;
+  border-top: 1px solid #f0eef5;
+  padding-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.manage-actions {
+  display: flex;
+  gap: 4px;
+}
+ion-button {
+  margin: 0;
+  min-height: 37px;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  --border-radius: 8px;
+  --border-width: 1px;
+}
+ion-button[fill='outline'] {
+  --border-color: #e0d9f3;
+}
+ion-button[fill='clear'] {
+  --padding-start: 3px;
+  --padding-end: 10px;
+}
+.past-note {
+  color: #9190a0;
+  font-size: 10px;
+  margin-top: 6px;
+}
+.edit-form {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid #eeebf7;
+}
+ion-input {
+  max-width: 340px;
+  --border-color: #dedcea;
+  --border-radius: 10px;
+  font-size: 14px;
+}
+.edit-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 18px;
+}
+.field-error {
+  color: #b33b3a;
+  font-size: 11px;
+  margin-top: 8px;
+}
+.message {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 12px;
+  padding: 15px 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 22px;
+}
+.message ion-icon {
+  flex-shrink: 0;
+  font-size: 21px;
+}
+.message--success {
+  background: #e6f5eb;
+  color: #27613d;
+}
+.message--error {
+  background: #fff0ee;
+  color: #a53938;
+}
+.state-card {
+  display: grid;
+  justify-items: center;
+  padding: 48px 24px;
+  text-align: center;
+  background: white;
+  border: 1px solid #e6e7ef;
+  border-radius: 18px;
+}
+.state-card > ion-icon {
+  font-size: 41px;
+}
+.state-card h2 {
+  margin-top: 19px;
+  font-size: 22px;
+}
+.state-card p {
+  margin: 0 0 22px;
+  max-width: 460px;
+  color: #737589;
+  line-height: 1.7;
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .page-shell {
+    padding: 18px 16px 28px;
+  }
+  .page-intro {
+    align-items: start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .page-intro > div > p:not(.eyebrow) {
+    font-size: 12px;
+  }
+  .count-tile {
+    padding: 13px;
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .count-tile ion-icon {
+    display: none;
+  }
+  .count-tile span {
+    grid-column: 1;
+  }
+  .count-tile strong {
+    font-size: 25px;
+  }
+  h1 {
+    font-size: 26px;
+  }
+  .eyebrow {
+    font-size: 8px;
+  }
+  ion-segment {
+    width: 100%;
+  }
+  ion-card-content {
+    padding: 18px;
+  }
+  .booking-date {
+    display: none;
+  }
+  .reservation-topline {
+    margin-bottom: 18px;
+  }
+  .reference {
+    font-size: 9px;
+  }
+  .ticket-body {
+    gap: 14px;
+    align-items: start;
+  }
+  .date-tile {
+    min-width: 49px;
+    padding: 10px 9px;
+  }
+  .date-tile strong {
+    font-size: 25px;
+  }
+  .date-tile span {
+    font-size: 9px;
+  }
+  h2 {
+    font-size: 17px;
+  }
+  .seat-count {
+    min-width: 35px;
+    padding-left: 10px;
+  }
+  .seat-count strong {
+    font-size: 23px;
+  }
+  .seat-count ion-icon {
+    font-size: 18px;
+  }
+  .ticket-actions {
+    align-items: start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .manage-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .event-meta {
+    font-size: 10px;
+  }
+  .event-meta ion-icon {
+    display: none;
+  }
+}

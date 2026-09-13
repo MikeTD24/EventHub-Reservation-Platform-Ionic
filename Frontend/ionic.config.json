@@ -1,0 +1,7 @@
+{
+  "name": "EventHub Ionic",
+  "type": "angular",
+  "integrations": {
+    "capacitor": {}
+  }
+}

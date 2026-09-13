@@ -1,0 +1,27 @@
+{
+  "name": "eventhub-ionic",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Version Ionic indépendante de EventHub Reservation Platform",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "scripts": {
+    "install:all": "npm install && npm --prefix Backend install && npm --prefix Frontend install",
+    "start": "concurrently -k -n API,IONIC -c cyan,magenta \"npm --prefix Backend run dev\" \"npm --prefix Frontend start\"",
+    "prestart": "node scripts/setup-local.mjs --start-db",
+    "db:start": "node scripts/setup-local.mjs --start-db",
+    "db:stop": "node scripts/setup-local.mjs --stop-db",
+    "build": "npm --prefix Frontend run build",
+    "test": "npm --prefix Frontend test",
+    "test:api": "node scripts/verify-api.mjs",
+    "test:e2e": "playwright test",
+    "setup:local": "node scripts/setup-local.mjs",
+    "format:check": "prettier --check Frontend/src Backend/src scripts README.md docs/*.md"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "@playwright/test": "^1.58.2",
+    "prettier": "^3.9.6"
+  }
+}

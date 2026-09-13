@@ -1,0 +1,158 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-menu-button aria-label="Ouvrir le menu" /></ion-buttons>
+    <ion-title>Administration</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <main class="page-shell admin-page">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">Espace organisateur</p>
+        <h1>Votre programmation.</h1>
+        <p class="muted">Créez vos événements et suivez les inscriptions en un coup d’œil.</p>
+      </div>
+      <div class="header-actions">
+        <ion-button fill="outline" routerLink="/admin/categories">Catégories</ion-button>
+        <ion-button routerLink="/admin/evenements/nouveau">Créer un événement</ion-button>
+      </div>
+    </header>
+    @if (actionMessage()) {
+      <p class="notice notice--success" role="status">{{ actionMessage() }}</p>
+    }
+    @if (actionError()) {
+      <p class="notice notice--error" role="alert">{{ actionError() }}</p>
+    }
+    @if (!isLoading() && !errorMessage()) {
+      <section class="statistics" aria-label="Statistiques des événements">
+        <article>
+          <strong>{{ evenementCount() }}</strong
+          ><span>Événements</span>
+        </article>
+        <article>
+          <strong>{{ upcomingCount() }}</strong
+          ><span>À venir</span>
+        </article>
+        <article>
+          <strong>{{ completeCount() }}</strong
+          ><span>Complets</span>
+        </article>
+        <article>
+          <strong>{{ participantCount() }}</strong
+          ><span>Places réservées</span>
+        </article>
+      </section>
+    }
+    <section>
+      <div class="section-heading">
+        <h2>Tous les événements</h2>
+        <ion-button
+          fill="clear"
+          [disabled]="isLoading() || deletingId() !== null"
+          (click)="loadEvenements()"
+          >Actualiser</ion-button
+        >
+      </div>
+      @if (isLoading()) {
+        <div class="state-card surface" role="status">
+          <ion-spinner name="crescent" />
+          <p>Chargement des événements…</p>
+        </div>
+      } @else if (errorMessage()) {
+        <div class="state-card surface notice--error" role="alert">
+          <p>{{ errorMessage() }}</p>
+          <ion-button fill="outline" (click)="loadEvenements()">Réessayer</ion-button>
+        </div>
+      } @else if (evenements().length === 0) {
+        <div class="state-card surface">
+          <h2>Tout commence par une idée</h2>
+          <p>Créez le premier événement de votre programmation.</p>
+          <ion-button routerLink="/admin/evenements/nouveau">Créer un événement</ion-button>
+        </div>
+      } @else {
+        <div class="event-list">
+          @for (evenement of evenements(); track evenement.id) {
+            <article class="surface event-card">
+              <div class="event-card__heading">
+                <div class="badges">
+                  <ion-badge color="light">{{ evenement.categorie.nom }}</ion-badge>
+                  <ion-badge
+                    [color]="
+                      isPast(evenement)
+                        ? 'medium'
+                        : evenement.places_restantes === 0
+                          ? 'warning'
+                          : 'success'
+                    "
+                  >
+                    {{
+                      isPast(evenement)
+                        ? 'Terminé'
+                        : evenement.places_restantes === 0
+                          ? 'Complet'
+                          : 'Disponible'
+                    }}
+                  </ion-badge>
+                </div>
+                <span class="muted event-id">N° {{ evenement.id }}</span>
+              </div>
+              <h3>{{ evenement.titre }}</h3>
+              <p class="description">
+                {{ evenement.description || 'Aucune description disponible.' }}
+              </p>
+              <dl class="event-details">
+                <div>
+                  <dt>Date et heure</dt>
+                  <dd>{{ evenement.date_evenement | date: 'dd/MM/yyyy à HH:mm' }}</dd>
+                </div>
+                <div>
+                  <dt>Lieu</dt>
+                  <dd>{{ evenement.lieu }}</dd>
+                </div>
+              </dl>
+              <div class="occupancy">
+                <div>
+                  <span
+                    >{{ evenement.places_occupees }} / {{ evenement.places_totales }} places
+                    réservées</span
+                  ><strong>{{ fillRate(evenement) }} %</strong>
+                </div>
+                <ion-progress-bar
+                  [value]="fillRate(evenement) / 100"
+                  aria-label="Taux de remplissage"
+                />
+                <p class="muted">{{ evenement.places_restantes }} place(s) restante(s)</p>
+              </div>
+              <footer class="event-actions">
+                <ion-button
+                  fill="outline"
+                  size="small"
+                  [routerLink]="['/admin/evenements', evenement.id, 'reservations']"
+                  >Participants</ion-button
+                >
+                <ion-button
+                  fill="outline"
+                  size="small"
+                  [routerLink]="['/admin/evenements', evenement.id, 'modifier']"
+                  >Modifier</ion-button
+                >
+                <ion-button fill="clear" size="small" [routerLink]="['/evenements', evenement.id]"
+                  >Voir</ion-button
+                >
+                <ion-button
+                  color="danger"
+                  fill="clear"
+                  size="small"
+                  [disabled]="deletingId() !== null"
+                  (click)="deleteEvenement(evenement)"
+                >
+                  {{ deletingId() === evenement.id ? 'Suppression…' : 'Supprimer' }}
+                </ion-button>
+              </footer>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </main>
+</ion-content>

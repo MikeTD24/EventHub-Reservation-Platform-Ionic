@@ -1,0 +1,135 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-menu-button aria-label="Ouvrir le menu" /></ion-buttons>
+    <ion-title>Catégories</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <main class="page-shell admin-page">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">Administration</p>
+        <h1>À chaque événement, sa catégorie.</h1>
+        <p class="muted">Organisez votre catalogue pour faciliter les découvertes.</p>
+      </div>
+      @if (!isLoading() && !errorMessage()) {
+        <ion-badge color="primary">{{ categoriesCount() }} catégorie(s)</ion-badge>
+      }
+    </header>
+    @if (actionMessage()) {
+      <p class="notice notice--success" role="status">{{ actionMessage() }}</p>
+    }
+    @if (actionError()) {
+      <p class="notice notice--error" role="alert">{{ actionError() }}</p>
+    }
+    <div class="admin-layout">
+      <section class="surface form-card">
+        <p class="eyebrow">{{ isEditing() ? 'Modification' : 'Nouvelle catégorie' }}</p>
+        <h2>{{ isEditing() ? 'Renommer la catégorie' : 'Ajouter une catégorie' }}</h2>
+        <form [formGroup]="categorieForm" (ngSubmit)="submit()">
+          <ion-input
+            label="Nom de la catégorie"
+            labelPlacement="stacked"
+            fill="outline"
+            type="text"
+            [maxlength]="100"
+            autocomplete="off"
+            formControlName="nom"
+            placeholder="Ex. Conférence"
+          />
+          @if (categorieForm.controls.nom.touched && categorieForm.controls.nom.invalid) {
+            <p class="field-error" role="alert">
+              @if (
+                categorieForm.controls.nom.hasError('required') ||
+                categorieForm.controls.nom.hasError('pattern')
+              ) {
+                Le nom de la catégorie est obligatoire.
+              } @else if (categorieForm.controls.nom.hasError('minlength')) {
+                Le nom doit contenir au moins 2 caractères.
+              } @else {
+                Le nom ne peut pas dépasser 100 caractères.
+              }
+            </p>
+          }
+          <div class="actions">
+            <ion-button type="submit" [disabled]="isSubmitting() || deletingId() !== null">
+              @if (isSubmitting()) {
+                <ion-spinner name="crescent" slot="start" />
+              }
+              {{ isSubmitting() ? 'Enregistrement…' : isEditing() ? 'Enregistrer' : 'Ajouter' }}
+            </ion-button>
+            @if (isEditing()) {
+              <ion-button
+                fill="outline"
+                type="button"
+                [disabled]="isSubmitting()"
+                (click)="cancelEditing()"
+                >Annuler</ion-button
+              >
+            }
+          </div>
+        </form>
+      </section>
+      <section class="surface">
+        <div class="section-heading">
+          <h2>Votre catalogue</h2>
+          <ion-button
+            fill="clear"
+            size="small"
+            [disabled]="isLoading() || deletingId() !== null || isSubmitting()"
+            (click)="loadCategories()"
+            >Actualiser</ion-button
+          >
+        </div>
+        @if (isLoading()) {
+          <div class="state-card" role="status">
+            <ion-spinner name="crescent" />
+            <p>Chargement des catégories…</p>
+          </div>
+        } @else if (errorMessage()) {
+          <div class="state-card notice--error" role="alert">
+            <p>{{ errorMessage() }}</p>
+            <ion-button fill="outline" (click)="loadCategories()">Réessayer</ion-button>
+          </div>
+        } @else if (categories().length === 0) {
+          <div class="state-card">
+            <h3>Le catalogue commence ici</h3>
+            <p>Ajoutez une première catégorie pour créer vos événements.</p>
+          </div>
+        } @else {
+          <div class="category-list">
+            @for (categorie of categories(); track categorie.id) {
+              <article
+                class="category-item"
+                [class.category-item--editing]="editingId() === categorie.id"
+              >
+                <div>
+                  <span class="muted">Catégorie n° {{ categorie.id }}</span>
+                  <h3>{{ categorie.nom }}</h3>
+                </div>
+                <div class="category-actions">
+                  <ion-button
+                    fill="outline"
+                    size="small"
+                    [disabled]="deletingId() !== null || isSubmitting()"
+                    (click)="startEditing(categorie)"
+                    >Modifier</ion-button
+                  >
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    color="danger"
+                    [disabled]="deletingId() !== null || isSubmitting()"
+                    (click)="deleteCategorie(categorie)"
+                  >
+                    {{ deletingId() === categorie.id ? 'Suppression…' : 'Supprimer' }}
+                  </ion-button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  </main>
+</ion-content>

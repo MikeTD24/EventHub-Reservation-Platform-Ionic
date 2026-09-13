@@ -1,0 +1,200 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"
+      ><ion-back-button
+        defaultHref="/evenements"
+        text="Retour"
+        aria-label="Retour aux événements"
+      ></ion-back-button
+    ></ion-buttons>
+    <ion-title>L’événement</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher
+    slot="fixed"
+    [disabled]="isSubmitting() || isConfirming()"
+    (ionRefresh)="loadEvenement($event)"
+  >
+    <ion-refresher-content
+      pullingText="Tirez pour actualiser"
+      refreshingText="Actualisation…"
+    ></ion-refresher-content>
+  </ion-refresher>
+  <main class="page-shell">
+    @if (isLoading()) {
+      <div class="state-card" role="status">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <h1>Un instant…</h1>
+        <p>Nous préparons les détails de votre sortie.</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="state-card" role="alert">
+        <ion-icon name="calendar-outline" color="primary"></ion-icon>
+        <h1>Événement indisponible</h1>
+        <p>{{ errorMessage() }}</p>
+        <ion-button (click)="loadEvenement()">Réessayer</ion-button
+        ><ion-button fill="clear" routerLink="/evenements">Parcourir l’agenda</ion-button>
+      </div>
+    } @else if (evenement(); as event) {
+      <section class="event-hero">
+        <div class="hero-copy">
+          <ion-badge color="primary">{{ event.categorie.nom }}</ion-badge>
+          <p class="eyebrow">VOTRE PROCHAIN RENDEZ-VOUS</p>
+          <h1>{{ event.titre }}</h1>
+          <p class="hero-place">
+            <ion-icon name="location-outline" aria-hidden="true"></ion-icon>{{ event.lieu }}
+          </p>
+        </div>
+        <div class="hero-date">
+          <span>{{ event.date_evenement | date: 'EEEE' }}</span
+          ><strong>{{ event.date_evenement | date: 'dd' }}</strong
+          ><span>{{ event.date_evenement | date: 'MMMM yyyy' }}</span>
+        </div>
+      </section>
+      <div class="detail-layout">
+        <div class="information-column">
+          <ion-card>
+            <ion-card-content>
+              <h2>Au programme</h2>
+              <p class="description">
+                {{
+                  event.description ||
+                    'Tous les détails pratiques pour préparer votre venue sont réunis ici.'
+                }}
+              </p>
+              <div class="practical-grid">
+                <div>
+                  <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+                  <dl>
+                    <dt>Date</dt>
+                    <dd>{{ event.date_evenement | date: 'dd MMMM yyyy' }}</dd>
+                  </dl>
+                </div>
+                <div>
+                  <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+                  <dl>
+                    <dt>Horaire</dt>
+                    <dd>{{ event.date_evenement | date: 'HH:mm' }}</dd>
+                  </dl>
+                </div>
+                <div>
+                  <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+                  <dl>
+                    <dt>Lieu</dt>
+                    <dd>{{ event.lieu }}</dd>
+                  </dl>
+                </div>
+                <div>
+                  <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+                  <dl>
+                    <dt>Capacité</dt>
+                    <dd>{{ event.places_totales }} personnes</dd>
+                  </dl>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+          <ion-card class="availability-card">
+            <ion-card-content>
+              <div class="availability-heading">
+                <h2>Les places partent vite</h2>
+                <strong>{{ event.places_restantes }} <span>restantes</span></strong>
+              </div>
+              <ion-progress-bar
+                [value]="occupation(event)"
+                aria-label="Proportion de places réservées"
+              ></ion-progress-bar>
+              <p>
+                {{ event.places_occupees }} place{{ event.places_occupees > 1 ? 's' : '' }} déjà
+                réservée{{ event.places_occupees > 1 ? 's' : '' }} sur {{ event.places_totales }}.
+              </p>
+            </ion-card-content>
+          </ion-card>
+        </div>
+        <ion-card class="reservation-card">
+          <ion-card-content>
+            <span class="ticket-icon"
+              ><ion-icon name="ticket-outline" aria-hidden="true"></ion-icon
+            ></span>
+            <p class="eyebrow">UNE PLACE POUR VOUS</p>
+            <h2>On vous garde une place ?</h2>
+            <p class="reservation-intro">
+              Réservez en quelques secondes et retrouvez votre sortie dans vos réservations.
+            </p>
+            @if (successMessage()) {
+              <div class="message message--success" role="status">
+                <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon
+                ><span>{{ successMessage() }}</span>
+              </div>
+              <ion-button expand="block" routerLink="/mes-reservations"
+                >Voir mes réservations</ion-button
+              >
+            }
+            @if (reservationError()) {
+              <div class="message message--error" role="alert">{{ reservationError() }}</div>
+            }
+            @if (isPast(event)) {
+              <div class="message message--info">
+                Cet événement a déjà commencé. Les réservations sont fermées.
+              </div>
+            } @else if (event.places_restantes === 0) {
+              <div class="message message--info">
+                Cet événement est complet. Découvrez les autres sorties de l’agenda.
+              </div>
+              <ion-button expand="block" fill="outline" routerLink="/evenements"
+                >Explorer les événements</ion-button
+              >
+            } @else if (!isAuthenticated()) {
+              <p class="login-note">Connectez-vous pour confirmer votre réservation.</p>
+              <ion-button
+                expand="block"
+                routerLink="/connexion"
+                [queryParams]="{ returnUrl: '/evenements/' + event.id }"
+                >Se connecter pour réserver</ion-button
+              >
+            } @else {
+              <form [formGroup]="reservationForm" (ngSubmit)="reserver()" novalidate>
+                <ion-input
+                  label="Nombre de places"
+                  labelPlacement="stacked"
+                  fill="outline"
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  step="1"
+                  [max]="event.places_restantes"
+                  formControlName="nombre_places"
+                  [readonly]="isSubmitting() || isConfirming()"
+                  helperText="Choisissez un nombre entier de places."
+                ></ion-input>
+                @if (
+                  reservationForm.controls.nombre_places.touched &&
+                  reservationForm.controls.nombre_places.invalid
+                ) {
+                  <p class="field-error" role="alert">
+                    Choisissez un nombre entier entre 1 et {{ event.places_restantes }}.
+                  </p>
+                }
+                <ion-button
+                  expand="block"
+                  type="submit"
+                  [disabled]="isSubmitting() || isConfirming()"
+                >
+                  @if (isSubmitting()) {
+                    <ion-spinner name="crescent" slot="start"></ion-spinner> Réservation en cours…
+                  } @else {
+                    <ion-icon name="ticket-outline" slot="start"></ion-icon> Réserver mes places
+                  }
+                </ion-button>
+              </form>
+              <p class="reservation-note">
+                Vous pourrez modifier ou annuler avant le début de l’événement.
+              </p>
+            }
+          </ion-card-content>
+        </ion-card>
+      </div>
+    }
+  </main>
+</ion-content>

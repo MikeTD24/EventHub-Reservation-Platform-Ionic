@@ -1,0 +1,172 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"
+      ><ion-menu-button aria-label="Ouvrir le menu"></ion-menu-button
+    ></ion-buttons>
+    <ion-title>Explorer</ion-title>
+    <ion-buttons slot="end"
+      ><ion-button routerLink="/mes-reservations" aria-label="Mes réservations"
+        ><ion-icon slot="icon-only" name="calendar-outline"></ion-icon></ion-button
+    ></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="loadEvenements($event)">
+    <ion-refresher-content
+      pullingText="Tirez pour actualiser"
+      refreshingText="Actualisation…"
+    ></ion-refresher-content>
+  </ion-refresher>
+  <main class="page-shell">
+    <section class="explore-hero">
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon> LE PLAISIR DE SE
+          RETROUVER
+        </p>
+        <h1>Votre prochaine<br />sortie commence ici.</h1>
+        <p>
+          De belles découvertes, des moments à partager.<br class="desktop-break" />
+          Trouvez l’événement qui vous ressemble.
+        </p>
+        @if (!isLoading() && !errorMessage()) {
+          <span class="hero-count"
+            >{{ upcomingCount() }} événement{{ upcomingCount() > 1 ? 's' : '' }} à venir</span
+          >
+        }
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit"></div>
+        <div class="hero-ticket">
+          <span>EVENTHUB</span><ion-icon name="calendar-outline"></ion-icon
+          ><strong>On sort ?</strong>
+          <div class="ticket-dots"></div>
+        </div>
+        <span class="spark">✦</span>
+      </div>
+    </section>
+    <section class="discovery-controls" aria-label="Rechercher et filtrer les événements">
+      <div class="search-row">
+        <ion-searchbar
+          [value]="search()"
+          (ionInput)="search.set($event.detail.value ?? '')"
+          placeholder="Un événement, une ville…"
+          aria-label="Rechercher un événement"
+          [debounce]="150"
+        ></ion-searchbar>
+        <ion-select
+          label="Catégorie"
+          labelPlacement="stacked"
+          interface="popover"
+          [value]="categoryId()"
+          (ionChange)="categoryId.set($event.detail.value)"
+        >
+          <ion-select-option value="all">Toutes les catégories</ion-select-option>
+          @for (category of categories(); track category.id) {
+            <ion-select-option [value]="'' + category.id">{{ category.nom }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+      <ion-segment
+        [value]="activeFilter()"
+        (ionChange)="setFilter($event.detail.value)"
+        aria-label="Disponibilité des événements"
+      >
+        <ion-segment-button value="all"><ion-label>Tous</ion-label></ion-segment-button>
+        <ion-segment-button value="upcoming"><ion-label>À venir</ion-label></ion-segment-button>
+        <ion-segment-button value="available"
+          ><ion-label>Disponibles</ion-label></ion-segment-button
+        >
+      </ion-segment>
+    </section>
+    <div class="section-heading">
+      <h2>À l’affiche</h2>
+      @if (!isLoading() && !errorMessage()) {
+        <span aria-live="polite"
+          >{{ filteredEvenements().length }} résultat{{
+            filteredEvenements().length > 1 ? 's' : ''
+          }}</span
+        >
+      }
+    </div>
+    @if (isLoading()) {
+      <div class="state-card" role="status">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <h2>L’agenda arrive…</h2>
+        <p>Nous recherchons les prochains rendez-vous.</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="state-card" role="alert">
+        <ion-icon name="calendar-outline" color="primary"></ion-icon>
+        <h2>L’agenda est indisponible</h2>
+        <p>{{ errorMessage() }}</p>
+        <ion-button (click)="loadEvenements()">Réessayer</ion-button>
+      </div>
+    } @else if (evenements().length === 0) {
+      <div class="state-card">
+        <ion-icon name="calendar-outline" color="primary"></ion-icon>
+        <h2>De nouvelles sorties se préparent</h2>
+        <p>Revenez bientôt pour découvrir les prochains événements.</p>
+      </div>
+    } @else if (filteredEvenements().length === 0) {
+      <div class="state-card">
+        <h2>Aucun événement trouvé</h2>
+        <p>Essayez un autre mot-clé ou élargissez vos filtres.</p>
+        <ion-button fill="outline" (click)="resetFilters()">Réinitialiser les filtres</ion-button>
+      </div>
+    } @else {
+      <div class="events-grid">
+        @for (event of filteredEvenements(); track event.id; let index = $index) {
+          <ion-card
+            class="event-card"
+            [class.event-card--mint]="index % 3 === 1"
+            [class.event-card--peach]="index % 3 === 2"
+          >
+            <div class="card-cover">
+              <span class="category">{{ event.categorie.nom }}</span>
+              <div class="date-tile">
+                <strong>{{ event.date_evenement | date: 'dd' }}</strong
+                ><span>{{ event.date_evenement | date: 'MMM' }}</span>
+              </div>
+              <ion-icon class="cover-icon" name="sparkles-outline" aria-hidden="true"></ion-icon>
+              <span class="cover-caption">RENDEZ-VOUS À {{ event.lieu }}</span>
+            </div>
+            <ion-card-content>
+              <ion-badge [color]="availabilityColor(event)">{{
+                availabilityLabel(event)
+              }}</ion-badge>
+              <h3>
+                <a [routerLink]="['/evenements', event.id]">{{ event.titre }}</a>
+              </h3>
+              <p class="description">
+                {{ event.description || 'Un nouveau rendez-vous à découvrir avec EventHub.' }}
+              </p>
+              <p class="event-meta">
+                <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon
+                >{{ event.date_evenement | date: 'dd MMM yyyy · HH:mm' }}
+              </p>
+              <p class="event-meta">
+                <ion-icon name="location-outline" aria-hidden="true"></ion-icon>{{ event.lieu }}
+              </p>
+              <div class="capacity-label">
+                <span
+                  >{{ event.places_restantes }} place{{
+                    event.places_restantes > 1 ? 's' : ''
+                  }}
+                  restante{{ event.places_restantes > 1 ? 's' : '' }}</span
+                ><span>{{ event.places_totales }} au total</span>
+              </div>
+              <ion-progress-bar
+                [value]="occupation(event)"
+                aria-label="Proportion de places réservées"
+              ></ion-progress-bar>
+              <ion-button expand="block" fill="outline" [routerLink]="['/evenements', event.id]"
+                >Découvrir l’événement<ion-icon name="arrow-forward-outline" slot="end"></ion-icon
+              ></ion-button>
+            </ion-card-content>
+          </ion-card>
+        }
+      </div>
+    }
+  </main>
+</ion-content>

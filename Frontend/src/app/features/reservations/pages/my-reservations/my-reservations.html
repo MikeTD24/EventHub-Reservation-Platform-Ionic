@@ -1,0 +1,247 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"
+      ><ion-menu-button aria-label="Ouvrir le menu"></ion-menu-button
+    ></ion-buttons>
+    <ion-title>Mes réservations</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher
+    slot="fixed"
+    [disabled]="actionId() !== null || isConfirming()"
+    (ionRefresh)="loadReservations($event)"
+  >
+    <ion-refresher-content
+      pullingText="Tirez pour actualiser"
+      refreshingText="Actualisation…"
+    ></ion-refresher-content>
+  </ion-refresher>
+  <main class="page-shell">
+    <section class="page-intro">
+      <div>
+        <p class="eyebrow">VOS MOMENTS À PARTAGER</p>
+        <h1>Les sorties, c’est par ici.</h1>
+        <p>Vos réservations réunies au même endroit. Il ne reste plus qu’à en profiter.</p>
+      </div>
+      @if (isAuthenticated() && !isLoading() && !errorMessage()) {
+        <div class="count-tile">
+          <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon
+          ><strong>{{ activeCount() }}</strong
+          ><span>à venir</span>
+        </div>
+      }
+    </section>
+    @if (!isAuthenticated()) {
+      <div class="state-card">
+        <ion-icon name="ticket-outline" color="primary"></ion-icon>
+        <h2>Retrouvez vos réservations</h2>
+        <p>Connectez-vous pour consulter vos prochaines sorties.</p>
+        <ion-button routerLink="/connexion" [queryParams]="{ returnUrl: '/mes-reservations' }"
+          >Se connecter</ion-button
+        >
+      </div>
+    } @else {
+      @if (actionMessage()) {
+        <div class="message message--success" role="status">
+          <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon
+          >{{ actionMessage() }}
+        </div>
+      }
+      @if (actionError()) {
+        <div class="message message--error" role="alert">{{ actionError() }}</div>
+      }
+      @if (isLoading()) {
+        <div class="state-card" role="status">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <h2>Vos réservations arrivent…</h2>
+          <p>Nous rassemblons les détails de vos sorties.</p>
+        </div>
+      } @else if (errorMessage()) {
+        <div class="state-card" role="alert">
+          <h2>Chargement impossible</h2>
+          <p>{{ errorMessage() }}</p>
+          <ion-button (click)="loadReservations()">Réessayer</ion-button>
+        </div>
+      } @else if (reservations().length === 0) {
+        <div class="state-card">
+          <ion-icon name="ticket-outline" color="primary"></ion-icon>
+          <h2>Votre prochaine sortie vous attend</h2>
+          <p>Parcourez l’agenda et réservez vos premières places.</p>
+          <ion-button routerLink="/evenements"
+            >Découvrir les événements<ion-icon name="arrow-forward-outline" slot="end"></ion-icon
+          ></ion-button>
+        </div>
+      } @else {
+        <ion-segment
+          [value]="activeFilter()"
+          (ionChange)="setFilter($event.detail.value)"
+          aria-label="Filtrer les réservations"
+        >
+          <ion-segment-button value="all"><ion-label>Toutes</ion-label></ion-segment-button>
+          <ion-segment-button value="upcoming"><ion-label>À venir</ion-label></ion-segment-button>
+          <ion-segment-button value="history"><ion-label>Historique</ion-label></ion-segment-button>
+        </ion-segment>
+        @if (filteredReservations().length === 0) {
+          <div class="state-card">
+            <h2>Aucune réservation dans cette rubrique</h2>
+            <p>Retrouvez l’ensemble de vos réservations dans « Toutes ».</p>
+            <ion-button fill="outline" (click)="setFilter('all')"
+              >Voir toutes les réservations</ion-button
+            >
+          </div>
+        }
+        <div class="reservations-list">
+          @for (reservation of filteredReservations(); track reservation.id) {
+            <ion-card
+              class="reservation-card"
+              [class.reservation-card--cancelled]="reservation.statut === 'annulee'"
+            >
+              <ion-card-content>
+                <div class="reservation-topline">
+                  <div>
+                    <ion-badge
+                      [color]="
+                        reservation.statut === 'annulee'
+                          ? 'medium'
+                          : isPast(reservation)
+                            ? 'tertiary'
+                            : 'success'
+                      "
+                      >{{
+                        reservation.statut === 'annulee'
+                          ? 'Annulée'
+                          : isPast(reservation)
+                            ? 'Terminée'
+                            : 'Confirmée'
+                      }}</ion-badge
+                    ><span class="reference">Réservation nº {{ reservation.id }}</span>
+                  </div>
+                  <span class="booking-date">{{
+                    reservation.date_reservation | date: 'dd/MM/yyyy'
+                  }}</span>
+                </div>
+                <div class="ticket-body">
+                  @if (reservation.evenement; as event) {
+                    <div class="date-tile">
+                      <strong>{{ event.date_evenement | date: 'dd' }}</strong
+                      ><span>{{ event.date_evenement | date: 'MMM' }}</span>
+                    </div>
+                    <div class="event-copy">
+                      <p class="category">{{ event.categorie.nom }}</p>
+                      <h2>
+                        <a [routerLink]="['/evenements', event.id]">{{ event.titre }}</a>
+                      </h2>
+                      <p class="event-meta">
+                        <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon
+                        >{{ event.date_evenement | date: 'dd MMM yyyy · HH:mm' }}
+                      </p>
+                      <p class="event-meta">
+                        <ion-icon name="location-outline" aria-hidden="true"></ion-icon
+                        >{{ event.lieu }}
+                      </p>
+                    </div>
+                  } @else {
+                    <div class="event-copy">
+                      <h2>Événement indisponible</h2>
+                      <p>Les informations de cette sortie ne sont plus disponibles.</p>
+                    </div>
+                  }
+                  <div class="seat-count">
+                    <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon
+                    ><strong>{{ reservation.nombre_places }}</strong
+                    ><span>place{{ reservation.nombre_places > 1 ? 's' : '' }}</span>
+                  </div>
+                </div>
+                @if (editingId() === reservation.id) {
+                  <form
+                    class="edit-form"
+                    [formGroup]="editForm"
+                    (ngSubmit)="saveReservation(reservation)"
+                    novalidate
+                  >
+                    <ion-input
+                      label="Nouveau nombre de places"
+                      labelPlacement="stacked"
+                      fill="outline"
+                      type="number"
+                      inputmode="numeric"
+                      min="1"
+                      step="1"
+                      [max]="maximumPlaces(reservation)"
+                      formControlName="nombre_places"
+                      [readonly]="actionId() !== null || isConfirming()"
+                    ></ion-input>
+                    @if (
+                      editForm.controls.nombre_places.touched &&
+                      editForm.controls.nombre_places.invalid
+                    ) {
+                      <p class="field-error" role="alert">
+                        Choisissez un nombre entier entre 1 et {{ maximumPlaces(reservation) }}.
+                      </p>
+                    }
+                    <div class="edit-actions">
+                      <ion-button type="submit" [disabled]="actionId() !== null || isConfirming()">
+                        @if (actionId() === reservation.id) {
+                          <ion-spinner slot="start" name="crescent"></ion-spinner>
+                        }
+                        Enregistrer</ion-button
+                      ><ion-button
+                        type="button"
+                        fill="clear"
+                        (click)="stopEditing()"
+                        [disabled]="actionId() !== null || isConfirming()"
+                        >Fermer</ion-button
+                      >
+                    </div>
+                  </form>
+                } @else {
+                  <div class="ticket-actions">
+                    @if (reservation.evenement; as event) {
+                      <ion-button fill="clear" size="small" [routerLink]="['/evenements', event.id]"
+                        >Voir l’événement<ion-icon
+                          slot="end"
+                          name="arrow-forward-outline"
+                        ></ion-icon
+                      ></ion-button>
+                    }
+                    @if (canManage(reservation)) {
+                      <div class="manage-actions">
+                        <ion-button
+                          fill="outline"
+                          size="small"
+                          (click)="startEditing(reservation)"
+                          [disabled]="actionId() !== null || isConfirming()"
+                          ><ion-icon name="create-outline" slot="start"></ion-icon
+                          >Modifier</ion-button
+                        ><ion-button
+                          fill="clear"
+                          color="danger"
+                          size="small"
+                          (click)="cancelReservation(reservation)"
+                          [disabled]="actionId() !== null || isConfirming()"
+                        >
+                          @if (actionId() === reservation.id) {
+                            <ion-spinner name="crescent" slot="start"></ion-spinner>
+                          } @else {
+                            <ion-icon name="trash-outline" slot="start"></ion-icon>
+                          }
+                          Annuler</ion-button
+                        >
+                      </div>
+                    }
+                  </div>
+                  @if (reservation.statut === 'confirmee' && isPast(reservation)) {
+                    <p class="past-note">
+                      Cet événement a déjà commencé. Les modifications sont fermées.
+                    </p>
+                  }
+                }
+              </ion-card-content>
+            </ion-card>
+          }
+        </div>
+      }
+    }
+  </main>
+</ion-content>

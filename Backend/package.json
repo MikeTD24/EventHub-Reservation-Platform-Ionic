@@ -1,0 +1,44 @@
+{
+  "name": "eventhub-ionic-api",
+  "version": "1.0.0",
+  "description": "API REST de réservation d'événements",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "dev": "node --env-file=.env --watch-path=src src/server.js",
+    "db:sync": "node --env-file=.env src/config/syncDatabase.js",
+    "setup:local": "node ../scripts/setup-local.mjs",
+    "test:api": "node ../scripts/verify-api.mjs",
+    "format": "prettier --write src",
+    "format:check": "prettier --check src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.23.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.6"
+  },
+  "allowScripts": {
+    "bcrypt@6.0.0": true
+  },
+  "overrides": {
+    "sequelize": {
+      "uuid": "^11.1.1"
+    }
+  }
+}
